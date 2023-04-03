@@ -36,7 +36,6 @@ export class NavbarComponent {
       this.userDetails = userDetails;
     });
     this.addForm = this.fb.group({
-      author: [this.userDetails.userName],
       title: ['', Validators.required],
       content: ['', Validators.required],
     });
@@ -101,7 +100,6 @@ export class NavbarComponent {
   onAddPost(post: Post): void {
     document.getElementById('close-add-post')?.click();
     this.addForm = this.fb.group({
-      author: [''],
       title: [''],
       content: [''],
     });
