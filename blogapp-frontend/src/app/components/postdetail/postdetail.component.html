@@ -1,0 +1,34 @@
+<div class="blog-post max-w-4xl mx-auto px-4 py-6">
+  <img
+    class="post-image w-full h-80 object-cover object-center rounded-lg shadow-xl"
+    src="https://source.unsplash.com/random"
+    alt="Blog Post Image"
+  />
+  <div class="post-header flex items-center mt-6">
+    <img
+      class="author-avatar w-12 h-12 rounded-full mr-4"
+      src="https://source.unsplash.com/user/erondu"
+      alt="Avatar of Writer"
+    />
+    <div class="flex flex-col">
+      <div class="post-title font-bold text-3xl">{{ post.title }}</div>
+      <div class="post-author font-semibold text-gray-700 text-lg">
+        By {{ post.author }} | {{ viewCount }} views
+      </div>
+      <div class="post-date text-gray-600 text-base">
+        Posted on {{ formatDate(post.createdOn) }}
+      </div>
+    </div>
+  </div>
+  <div class="post-content mt-6 leading-7 text-gray-700 text-lg">
+    {{ post.content }}
+  </div>
+  <div class="post-footer flex justify-between items-center mt-6">
+    <div
+      class="post-updated-date text-gray-600 text-base"
+      *ngIf="post.updatedOn != post.createdOn"
+    >
+      Last updated on {{ formatDate(post.updatedOn) }}
+    </div>
+  </div>
+</div>

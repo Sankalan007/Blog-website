@@ -1,0 +1,268 @@
+<div
+  class="flex flex-wrap justify-center mx-auto"
+  style="max-width: 1500px"
+  style="
+    background-image: url('../../../assets/blogHomeBG.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 89vh;
+  "
+>
+  <div
+    *ngFor="let post of posts"
+    class="w-[400px] h-[560px] rounded-lg overflow-hidden shadow-2xl hover:shadow-lg mx-4 my-4 backdrop-blur-[80px]"
+  >
+    <img
+      class="w-full h-48 object-cover object-center"
+      src="https://source.unsplash.com/random"
+      alt="Blog Post Image"
+    />
+    <div class="px-6 py-4">
+      <div class="font-semibold text-lg mb-2 min-h-[50px]">
+        {{ trimTitle(post.title) }}
+      </div>
+      <p class="text-gray-700 text-base min-h-[120px]">
+        {{ trimContent(post.content) }}
+      </p>
+      <div class="flex items-center mt-4">
+        <img
+          class="w-10 h-10 rounded-full mr-4"
+          src="https://source.unsplash.com/user/erondu"
+          alt="Avatar of Writer"
+        />
+        <div class="text-lg">
+          <p class="text-gray-900 leading-none text-sm font-merriweather">
+            {{ post.author }}
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-between mt-4 text-xs min-h-[32px]">
+        <span class="text-gray-400">
+          Created on : {{ formatDate(post.createdOn) }}
+        </span>
+        <span *ngIf="post.updatedOn != post.createdOn" class="text-gray-400">
+          Last updated : {{ formatDate(post.updatedOn) }}
+        </span>
+      </div>
+      <div class="flex justify-between mt-4 mx-auto">
+        <ng-container *ngIf="post.author == userDetails.userName">
+          <button
+            (click)="openEditModal(post)"
+            class="text-blue-700 hover:text-blue-500"
+          >
+            <i class="fas fa-pencil-alt mr-2"></i>Update
+          </button>
+          <button
+            (click)="openDeleteModal(post)"
+            class="text-red-700 hover:text-red-500"
+          >
+            <i class="fas fa-trash mr-2"></i>Delete
+          </button>
+        </ng-container>
+        <button
+          [routerLink]="['/posts', post.id]"
+          class="text-green-700 hover:text-green-500"
+        >
+          <i class="fas fa-arrow-circle-right mr-2"></i>Read More
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<ng-template #editModal>
+  <div
+    class="relative z-10"
+    aria-labelledby="edit-modal"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all w-[800px]"
+        >
+          <button (click)="closeEditModal()" class="absolute top-6 right-6">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="bg-white px-4 pt-5 pb-4 w-full">
+            <div class="">
+              <div class="mt-0 sm:ml-4 text-left">
+                <h3
+                  class="text-base font-semibold leading-6 text-gray-900"
+                  id="modal-title"
+                >
+                  Write a new blog
+                </h3>
+                <form
+                  #editForm="ngForm"
+                  (ngSubmit)="onUpdatePost(editForm.value, editPost.id)"
+                >
+                  <div class="mb-4">
+                    <label
+                      class="block text-gray-700 font-bold mb-2"
+                      for="author"
+                    >
+                      Author
+                    </label>
+                    <input
+                      ngModel="{{ editPost.author }}"
+                      name="author"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="author"
+                      type="text"
+                      placeholder="John Doe"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      class="block text-gray-700 font-bold mb-2"
+                      for="title"
+                    >
+                      Title
+                    </label>
+                    <input
+                      ngModel="{{ editPost.title }}"
+                      name="title"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="title"
+                      type="text"
+                      placeholder="What's on your mind?"
+                      required
+                    />
+                  </div>
+                  <div class="mb-4">
+                    <label
+                      class="block text-gray-700 font-bold mb-2"
+                      for="content"
+                    >
+                      Content
+                    </label>
+                    <textarea
+                      ngModel="{{ editPost.content }}"
+                      name="content"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="content"
+                      type="text"
+                      placeholder="Write something..."
+                      required
+                    ></textarea>
+                  </div>
+
+                  <div class="bg-gray-50 px-4 py-3 flex flex-row-reverse">
+                    <button
+                      [disabled]="editForm.invalid"
+                      type="submit"
+                      class="shadow-[0_4px_9px_-4px_#3b71ca] inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                    >
+                      Save
+                    </button>
+                    <button
+                      (click)="closeEditModal()"
+                      id="close-edit-post"
+                      type="button"
+                      class="shadow-[0_4px_9px_-4px_#3b71ca] mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Delete Modal -->
+<ng-template #deleteModal>
+  <div
+    class="relative z-10"
+    aria-labelledby="delete-modal"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+    ></div>
+
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+      <div
+        class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+      >
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
+        >
+          <button (click)="closeDeleteModal()" class="absolute top-6 right-6">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div
+                class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="h-6 w-6 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                  />
+                </svg>
+              </div>
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                <h3
+                  class="text-base font-semibold leading-6 text-gray-900"
+                  id="modal-title"
+                >
+                  Delete entry
+                </h3>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500">
+                    Are you sure you want to delete this post titled "{{
+                      deletePost.title
+                    }}"? This entry can't be retrieved once it is deleted.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+            <button
+              (click)="onDeletePost(deletePost.id)"
+              type="button"
+              class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+            >
+              Delete
+            </button>
+            <button
+              id="delete-cancel-button"
+              (click)="closeDeleteModal()"
+              type="button"
+              class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
