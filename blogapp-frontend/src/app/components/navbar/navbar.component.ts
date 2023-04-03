@@ -105,6 +105,7 @@ export class NavbarComponent {
       title: [''],
       content: [''],
     });
+    post.author = this.userDetails.userName;
     post.createdOn = new Date().toISOString();
     post.updatedOn = post.createdOn;
     post.userId = this.userDetails.id;
