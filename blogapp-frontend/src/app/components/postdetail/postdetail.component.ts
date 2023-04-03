@@ -33,9 +33,6 @@ export class PostdetailComponent implements OnInit {
       this.views = views;
     });
     this.viewCount = this.views.length;
-    if (this.views.some((n) => n === null)) {
-      this.viewCount = this.viewCount - 1;
-    }
   }
 
   formatDate(input: string): string {

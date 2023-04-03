@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { ViewService } from 'src/app/services/view.service';
 import View from 'src/app/model/View';
 import { Router } from '@angular/router';
+import { Observable, forkJoin, map, tap } from 'rxjs';
 
 @Component({
   selector: 'app-posts',
@@ -26,6 +27,8 @@ export class PostsComponent implements OnInit {
   deletePost: Post = {} as Post;
   views: number[] = [];
   viewMap: Map<number, number> = new Map();
+  viewCount: number[] = [];
+  uniqueViews: number = 0;
 
   view!: View;
 
@@ -38,17 +41,27 @@ export class PostsComponent implements OnInit {
     private router: Router
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.sharedDataService.postsObservable.subscribe((posts) => {
       this.posts = posts;
-      // for (let post of this.posts) {
-      //   this.viewMap.set(post.id, this.getViews(post.id));
-      //   console.log(this.viewMap);
-      // }
+
+      const observables = this.posts.map((post) =>
+        this.getViews(post.id).pipe(
+          map((uniqueViews) => [post.id, uniqueViews])
+        )
+      );
+
+      forkJoin(observables).subscribe((results) => {
+        this.viewMap = new Map<number, number>(
+          results.map(([postId, uniqueViews]) => [postId, uniqueViews])
+        );
+      });
     });
+
     this.sharedDataService.userDetails$.subscribe((userDetails) => {
       this.userDetails = userDetails;
     });
+
     this.getPosts();
   }
 
@@ -63,16 +76,15 @@ export class PostsComponent implements OnInit {
     );
   }
 
-  getViews(postId: number): number {
-    this.viewService.getViewers(postId).subscribe((res: number[]) => {
-      this.views = res;
-    });
-    console.log(this.views);
-    let size = 0;
-    for (let i of this.views) {
-      if (i > 0) size++;
-    }
-    return size;
+  getViews(postId: number): Observable<number> {
+    return this.viewService.getViewers(postId).pipe(
+      tap((res: number[]) => {
+        this.views = res;
+        this.viewCount = res;
+        this.uniqueViews = res.length;
+      }),
+      map(() => this.uniqueViews)
+    );
   }
 
   onView(postId: number) {
@@ -84,10 +96,10 @@ export class PostsComponent implements OnInit {
     if (this.isAuthenticated()) {
       this.viewService.addViewer(view).subscribe(
         (res) => {
-          let currentPostView = 0;
-          currentPostView = this.getViews(postId);
-          this.viewMap.set(postId, this.getViews(postId));
-          this.sharedDataService.updateViews(this.views);
+          this.getViews(postId).subscribe((uniqueViews) => {
+            this.viewMap.set(postId, uniqueViews);
+            this.sharedDataService.updateViews(this.views);
+          });
         },
         (error) => {
           alert(error.message);
