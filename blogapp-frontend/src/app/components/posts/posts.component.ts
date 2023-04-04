@@ -42,26 +42,34 @@ export class PostsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Subscribe to the postsObservable in the sharedDataService
     this.sharedDataService.postsObservable.subscribe((posts) => {
+      // Assign the posts received from the subscription to this.posts
       this.posts = posts;
 
+      // Create an array of observables, where each observable gets the number of unique views for a post
       const observables = this.posts.map((post) =>
         this.getViews(post.id).pipe(
           map((uniqueViews) => [post.id, uniqueViews])
         )
       );
 
+      // Use forkJoin to subscribe to all observables and wait for all of them to complete
       forkJoin(observables).subscribe((results) => {
+        // Create a new Map where each key is a postId and each value is the number of unique views for that post
         this.viewMap = new Map<number, number>(
           results.map(([postId, uniqueViews]) => [postId, uniqueViews])
         );
       });
     });
 
+    // Subscribe to the userDetails$ observable in the sharedDataService
     this.sharedDataService.userDetails$.subscribe((userDetails) => {
+      // Assign the userDetails received from the subscription to this.userDetails
       this.userDetails = userDetails;
     });
 
+    // Call the getPosts() function to fetch the posts
     this.getPosts();
   }
 
@@ -76,13 +84,23 @@ export class PostsComponent implements OnInit {
     );
   }
 
+  // This function takes in a postId as a number and returns an Observable of number type
   getViews(postId: number): Observable<number> {
+    // It makes a call to the getViewers() function of the viewService with the postId as argument
     return this.viewService.getViewers(postId).pipe(
+      // The pipe function allows you to chain RxJS operators together
+      // The tap operator allows you to perform side effects such as logging, without modifying the data stream
       tap((res: number[]) => {
+        // In this case, we're setting some properties on the current object based on the result of the viewService call
+        // We're setting the views property to the result array
         this.views = res;
+        // We're also setting the viewCount property to the result array
         this.viewCount = res;
+        // And finally, we're setting the uniqueViews property to the length of the result array, giving us the number of unique viewers
         this.uniqueViews = res.length;
       }),
+      // The map operator allows you to transform the data stream in some way
+      // In this case, we're simply returning the value of the uniqueViews property as a number
       map(() => this.uniqueViews)
     );
   }
