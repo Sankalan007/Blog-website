@@ -1,5 +1,5 @@
 <nav
-  class="z-10 backdrop-blur-2xl bg-black text-white flex items-center justify-between flex-wrap py-4 px-6"
+  class="fixed z-50 w-full backdrop-blur-2xl bg-black text-white flex items-center justify-between flex-wrap py-4 px-6"
 >
   <div class="flex items-center flex-shrink-0 mr-6">
     <svg
@@ -91,7 +91,7 @@
           <i class="fa fa-chevron-down ml-2"></i>
         </div>
         <div
-          class="absolute right-0 mt-2 bg-white border rounded-md shadow-lg w-48 hidden"
+          class="absolute z-999 right-0 mt-2 bg-white border rounded-md shadow-lg w-48 hidden"
           [ngClass]="{ hidden: !showDropdown }"
         >
           <a
