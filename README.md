@@ -40,9 +40,9 @@ To run the angular frontend part of project
   ng serve -o
 ```
 
-To run the spring boot backend part of project: Just go to your preferred Java editor and run the main class. Your backend application will be running at [8080 port of the Localhost](localhost:8080).
+To run the spring boot backend part of project: Just go to your preferred Java editor and run the main class. Your backend application will be running at [8080 port of the Localhost](http://localhost:8080).
 
-The project will be running at [4200 port of the Localhost](http:localhost:4200).
+The project will be running at [4200 port of the Localhost](http://localhost:4200).
 
 
 ## Usage
