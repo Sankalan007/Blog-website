@@ -1,1 +1,38 @@
-<p>useraccount works!</p>
+<div
+  class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12"
+>
+  <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-light-blue-500 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-3 sm:rounded-3xl"
+    ></div>
+    <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+      <div class="max-w-lg mx-auto">
+        <div class="flex justify-center">
+          <h1 class="text-3xl font-bold text-gray-900">User Details</h1>
+        </div>
+        <div class="divide-y divide-gray-200">
+          <div
+            class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7"
+          >
+            <div class="flex justify-between">
+              <span class="font-bold">First Name:</span>
+              <span>{{ userDetails.firstName }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold">Last Name:</span>
+              <span>{{ userDetails.lastName }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold">Username:</span>
+              <span>{{ userDetails.userName }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-bold">Email:</span>
+              <span>{{ userDetails.email }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
