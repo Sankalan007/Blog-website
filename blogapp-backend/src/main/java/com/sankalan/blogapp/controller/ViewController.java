@@ -3,6 +3,7 @@ package com.sankalan.blogapp.controller;
 import com.sankalan.blogapp.model.Viewer;
 import com.sankalan.blogapp.service.ViewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/v1/views")
 @RequiredArgsConstructor
 public class ViewController {
+    @Autowired
     private final ViewService viewService;
 
     @GetMapping("/unique/{postId}")

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import Post from 'src/app/model/Post';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { PostserviceService } from 'src/app/services/postservice.service';
@@ -15,6 +15,8 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class NavbarComponent {
   @ViewChild('addModal') addModal: any;
+  @ViewChild('dropdown') dropdown!: ElementRef;
+
   userDetails!: any;
   posts!: Post[];
   addForm!: FormGroup;
@@ -40,7 +42,21 @@ export class NavbarComponent {
       content: ['', Validators.required],
     });
     this.getPosts();
+    // document.addEventListener('click', this.closeDropdown.bind(this));
   }
+
+  // ngOnDestroy() {
+  //   document.removeEventListener('click', this.closeDropdown.bind(this));
+  // }
+
+  // closeDropdown(event: MouseEvent) {
+  //   if (
+  //     this.showDropdown &&
+  //     !this.dropdown.nativeElement.contains(event.target)
+  //   ) {
+  //     this.showDropdown = false;
+  //   }
+  // }
 
   isAuthenticated() {
     return this.authService.isAuthenticated();
@@ -60,8 +76,7 @@ export class NavbarComponent {
   }
 
   toggleDropdown() {
-    this.dropdownOpen = !this.dropdownOpen;
-    this.showDropdown = this.dropdownOpen;
+    this.showDropdown = !this.showDropdown;
   }
 
   searchPosts(key: string) {
@@ -82,7 +97,7 @@ export class NavbarComponent {
     }
     this.posts = results;
     this.sharedDataService.updatePosts(this.posts);
-    if (results.length == 0 || !key) this.getPosts();
+    if (!key) this.getPosts();
   }
 
   getPosts(): void {
@@ -115,6 +130,7 @@ export class NavbarComponent {
         alert(error.message);
       }
     );
+    this.router.navigate(['/']);
   }
 
   openAddModal() {

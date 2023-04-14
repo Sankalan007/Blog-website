@@ -13,6 +13,9 @@ import { PostdetailComponent } from './components/postdetail/postdetail.componen
 import { UserblogsComponent } from './components/userblogs/userblogs.component';
 import { TermsandconditionsComponent } from './components/termsandconditions/termsandconditions.component';
 import { UseraccountComponent } from './components/useraccount/useraccount.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -32,6 +35,13 @@ import { UseraccountComponent } from './components/useraccount/useraccount.compo
     FormsModule,
     HttpClientModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule, // required animations module
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      positionClass: 'toast-bottom-right',
+      preventDuplicates: true,
+      closeButton: true,
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

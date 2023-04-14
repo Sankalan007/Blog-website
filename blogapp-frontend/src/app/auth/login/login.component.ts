@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/services/auth.service';
 import { SharedDataService } from 'src/app/services/shareddata.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,8 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private sharedDataService: SharedDataService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -34,13 +36,17 @@ export class LoginComponent implements OnInit {
       (response: any) => {
         // login successful, save token to local storage and retrieve user details
         localStorage.setItem('token', response.token);
+        this.toastr.success('Yay! You are logged in.', 'Login successful');
         this.authService.getUserDetails().subscribe(
           (user: any) => {
             this.sharedDataService.setUserDetails(user);
             this.userDetails = user;
           },
           (error) => {
-            console.log(error);
+            this.toastr.error(
+              'Please try again later.',
+              'Something went wrong'
+            );
           }
         );
 
@@ -51,8 +57,7 @@ export class LoginComponent implements OnInit {
       },
       (error) => {
         // login failed, show error message
-        this.errorMessage = 'Wrong user credentials';
-        console.log(this.errorMessage);
+        this.toastr.error('Please try again later.', 'Something went wrong');
       }
     );
     // this.router.navigate(['/']);

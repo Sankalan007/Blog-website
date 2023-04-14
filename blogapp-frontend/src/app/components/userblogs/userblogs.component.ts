@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { share } from 'rxjs';
+import { Observable, map, share, tap } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Post from 'src/app/model/Post';
 import { AuthService } from 'src/app/services/auth.service';
 import { PostserviceService } from 'src/app/services/postservice.service';
 import { SharedDataService } from 'src/app/services/shareddata.service';
+import View from 'src/app/model/View';
+import { ViewService } from 'src/app/services/view.service';
 
 @Component({
   selector: 'app-userblogs',
@@ -21,12 +23,17 @@ export class UserblogsComponent implements OnInit {
   trimmed: boolean = false;
   editPost: Post = {} as Post;
   deletePost: Post = {} as Post;
+  views: number[] = [];
+  viewMap: Map<number, number> = new Map();
+  viewCount: number[] = [];
+  uniqueViews: number = 0;
 
   constructor(
     private sharedDataService: SharedDataService,
     private postService: PostserviceService,
     private modalService: NgbModal,
-    private authService: AuthService
+    private authService: AuthService,
+    private viewService: ViewService
   ) {}
 
   ngOnInit(): void {
@@ -60,6 +67,49 @@ export class UserblogsComponent implements OnInit {
 
   closeEditModal() {
     this.modalService.dismissAll();
+  }
+
+  // This function takes in a postId as a number and returns an Observable of number type
+  getViews(postId: number): Observable<number> {
+    // It makes a call to the getViewers() function of the viewService with the postId as argument
+    return this.viewService.getViewers(postId).pipe(
+      // The pipe function allows you to chain RxJS operators together
+      // The tap operator allows you to perform side effects such as logging, without modifying the data stream
+      tap((res: number[]) => {
+        // In this case, we're setting some properties on the current object based on the result of the viewService call
+        // We're setting the views property to the result array
+        this.views = res;
+        // We're also setting the viewCount property to the result array
+        this.viewCount = res;
+        // And finally, we're setting the uniqueViews property to the length of the result array, giving us the number of unique viewers
+        this.uniqueViews = res.length;
+      }),
+      // The map operator allows you to transform the data stream in some way
+      // In this case, we're simply returning the value of the uniqueViews property as a number
+      map(() => this.uniqueViews)
+    );
+  }
+
+  onView(postId: number) {
+    let view: View = {
+      postId: postId,
+      userId: this.userDetails.id,
+      viewedOn: new Date().toISOString(),
+    };
+    if (this.isAuthenticated()) {
+      this.viewService.addViewer(view).subscribe(
+        (res) => {
+          this.getViews(postId).subscribe((uniqueViews) => {
+            this.viewMap.set(postId, uniqueViews);
+            this.sharedDataService.updateViews(this.views);
+          });
+        },
+        (error) => {
+          alert(error.message);
+        }
+      );
+    }
+    // this.router.navigate(['/posts', postId]);
   }
 
   onUpdatePost(post: Post, postId: number) {

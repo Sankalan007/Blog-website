@@ -9,13 +9,14 @@
     min-height: 89vh;
   "
 >
+<ng-container *ngIf="posts.length != 0">
   <div
     *ngFor="let post of posts"
     class="w-[400px] h-[560px] rounded-lg overflow-hidden shadow-2xl hover:shadow-lg mx-4 my-4 backdrop-blur-[80px]"
   >
     <img
       class="w-full h-48 object-cover object-center"
-      src="https://source.unsplash.com/random"
+      src="https://source.unsplash.com/random?blog,notebook,laptop,writing"
       alt="Blog Post Image"
     />
     <div class="px-6 py-4">
@@ -61,6 +62,7 @@
           </button>
         </ng-container>
         <button
+          (click)="onView(post.id)"
           [routerLink]="['/posts', post.id]"
           class="text-green-700 hover:text-green-500"
         >
@@ -69,6 +71,10 @@
       </div>
     </div>
   </div>
+</ng-container>
+<ng-container *ngIf="posts.length === 0">
+  <h1 class="text-3xl text-black">No blogs available</h1>
+</ng-container>
 </div>
 
 <!-- Edit Modal -->
